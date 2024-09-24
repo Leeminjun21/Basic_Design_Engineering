@@ -53,7 +53,7 @@ void threshold_line_image(int threshold_value)
   {
     if (Pixel[i] >= threshold_value)
     {
-      Threshold_Data[i] = 255; // 임계값 이상인 경우 흰색(255)로 설정
+      Threshold_Data[i] = 255; // 임계값 이상인 경우 흰색(255)으로 설정
     }
     else
     {
@@ -86,7 +86,7 @@ void read_line_camera(void)
 double line_COM(void)
 {
   double COM = 0.0; // 질량중심을 계산할 변수
-  double mass_sum = 0;   // 전체 질량 합을 저장할 변수
+  double mass_sum = 0.0;   // 전체 질량 합을 저장할 변수
 
   for (int i = 0; i < NPIXELS; i++)
   {
@@ -100,6 +100,7 @@ double line_COM(void)
   }
 
   COM = COM / mass_sum; // 질량중심 계산
+
   return COM; // 계산된 질량중심 반환
 }
 
@@ -107,19 +108,19 @@ void loop()
 {
   double cx = 0;
   read_line_camera();         // 카메라 센서 데이터 읽기
-  threshold_line_image(50);   // 임계값을 50으로 설정하여 이진화
-  cx = line_COM();       // 질량중심 계산
+  threshold_line_image(150);  // 임계값을 150으로 설정하여 이진화
+  cx = line_COM();            // 질량중심 계산
 
-  // 카메라에서 읽은 데이터, 이진화된 값, 질량중심 값을 시리얼로 출력
+  // 카메라에서 읽은 데이터, 이진화된 값, cx 값과 i의 비교 결과 출력
   for (int i = 0; i < NPIXELS; i++)
   {
     Serial.print(Pixel[i]);                    // 원본 카메라 데이터 출력
     Serial.print(",");                         // 쉼표로 구분
     Serial.print(Threshold_Data[i]); // 이진화된 데이터 출력
     Serial.print(",");                         // 쉼표로 구분
-    Serial.print(cx);                          // 질량중심 값 출력
+    Serial.print((i == (int)cx) ? 255 : 0); // i와 cx가 같을 때 255, 다를 때 0 출력
     Serial.println();                          // 줄바꿈
   }
 
-  delay(100); // 데이터가 읽기 쉽도록 약간의 지연 추가
+  delay(400); // 데이터가 읽기 쉽도록 약간의 지연 추가
 }
